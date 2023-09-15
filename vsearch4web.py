@@ -1,6 +1,6 @@
 
 from flask import Flask, render_template, request
-from FlaskAPI.vsearch import search4letters
+from vsearch import search4letters
 
 app = Flask(__name__)
 
