@@ -4,6 +4,11 @@ from vsearch import search4letters
 
 app = Flask(__name__)
 
+def log_request(req: 'flask_request', res: str) -> None:
+    """<req> argument is assigned the current Flask request object, while the 
+        <res> argument is assigned the results from calling search4letters"""
+    with open('vsearch.log', 'a') as log :
+        print(req, res, file=log)
 
 @app.route('/search4', methods=['POST'])
 def do_search() -> 'html':
@@ -11,11 +16,19 @@ def do_search() -> 'html':
     letters = request.form['letters']
     title = 'Here are your results:'
     results = str(search4letters(phrase, letters))
+    log_request(request,results),
     return render_template('results.html',
                            the_title=title,
                            the_phrase=phrase,
                            the_letters=letters,
                            the_results=results,)
+
+@app.route('/viewlog')
+def view_the_log() -> str:
+ with open('vsearch.log') as log:
+    contents = log.read()
+    return contents
+
 
 
 @app.route('/')
