@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, escape
 from vsearch import search4letters
 
 app = Flask(__name__)
@@ -8,7 +8,7 @@ def log_request(req: 'flask_request', res: str) -> None:
     """<req> argument is assigned the current Flask request object, while the 
         <res> argument is assigned the results from calling search4letters"""
     with open('vsearch.log', 'a') as log :
-        print(req, res, file=log)
+        print(req.form, req.remote_addr, req.user_agent, res, file=log, sep='|')
 
 @app.route('/search4', methods=['POST'])
 def do_search() -> 'html':
@@ -24,10 +24,18 @@ def do_search() -> 'html':
                            the_results=results,)
 
 @app.route('/viewlog')
-def view_the_log() -> str:
- with open('vsearch.log') as log:
-    contents = log.read()
-    return contents
+def view_the_log() -> 'html':
+    contents = []
+    with open('vsearch.log') as log:
+        for line in log:
+            contents.append([])
+            for item in line.split('|'):
+                contents[-1].append(escape(item))
+    titles =('Form Data', 'Remote_addr', 'User_agent','Results')
+    return render_template('viewlog.html',
+                            the_title='View Log',
+                            the_row_titles=titles,
+                            the_data=contents,)
 
 
 
