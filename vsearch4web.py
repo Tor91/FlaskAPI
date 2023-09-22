@@ -5,9 +5,8 @@ from vsearch import search4letters
 import mysql.connector
 
 app = Flask(__name__)
-
 def log_request(req: 'flask_request', res: str) -> None:
-	 """Log details of the web request and the results."""
+    """Log details of the web request and the results."""
           	 
     with UseDatabase(app.config['dbconfig']) as cursor:
         _SQL = """insert into log 
